@@ -18,6 +18,7 @@ const BASE_URL = 'https://vendingexits.com';
 // and every cleaning-* route (leftovers from the cleaningexits fork).
 const STATIC_PAGES: Array<[string, string, string]> = [
   ['/',          'daily',   '1.0'],
+  ['/valuation', 'weekly',  '0.9'],
   ['/listings',  'daily',   '0.9'],
   ['/top10',     'daily',   '0.9'],
   ['/resources', 'weekly',  '0.8'],

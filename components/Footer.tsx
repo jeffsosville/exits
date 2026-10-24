@@ -6,13 +6,14 @@ export default function Footer() {
     {
       title: 'Browse',
       links: [
-        { label: 'Full Index', href: '/vending-index' },
+        { label: 'Full Index', href: '/listings' },
         { label: 'Subscribe', href: '/subscribe' },
       ],
     },
     {
       title: 'Sellers',
       links: [
+        { label: 'What Is My Route Worth?', href: '/valuation' },
         { label: 'Sell Your Business', href: '/sell' },
         { label: 'Resources', href: '/resources' },
       ],
