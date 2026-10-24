@@ -5,6 +5,8 @@ import Link from "next/link";
 
 export default function Subscribe() {
   const [email, setEmail] = useState("");
+  const [loadedAt] = useState(() => Date.now());
+  const [hp, setHp] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -17,7 +19,7 @@ export default function Subscribe() {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, hp_ref: hp, elapsed_ms: Date.now() - loadedAt }),
       });
 
       const data = await res.json();
@@ -60,6 +62,7 @@ export default function Subscribe() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div style={{ display: "none" }} aria-hidden="true"><input type="text" name="hp_ref" tabIndex={-1} autoComplete="off" value={hp} onChange={(e) => setHp(e.target.value)} /></div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email address
