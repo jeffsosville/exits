@@ -8,6 +8,7 @@ export default function Header() {
     { label: 'Browse', href: '/listings' },
     { label: 'What It\'s Worth', href: '/valuation' },
     { label: 'Resources', href: '/resources' },
+    { label: 'Weekly Listings', href: '/subscribe' },
     { label: 'Sell', href: '/sell' },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: '/contact' },

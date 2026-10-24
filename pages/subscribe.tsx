@@ -39,7 +39,8 @@ export default function Subscribe() {
   return (
     <>
       <Head>
-        <title>Subscribe — Vending Exits</title>
+        <title>The VendingExits Weekly — New Vending Routes for Sale</title>
+        <meta name="description" content="Free weekly email: new vending routes and businesses for sale, our exclusive listings, the strongest cash flow on the market, and what routes are selling for." />
       </Head>
 
       <main className="mx-auto max-w-2xl px-4 py-16">
@@ -52,9 +53,9 @@ export default function Subscribe() {
         <div className="rounded-2xl border bg-white p-8 shadow-sm">
           <div className="text-center mb-8">
             <div className="text-5xl mb-4">📬</div>
-            <h1 className="text-3xl font-bold mb-3">Get the Weekly Top 10</h1>
+            <h1 className="text-3xl font-bold mb-3">The VendingExits Weekly</h1>
             <p className="text-gray-600 text-lg">
-              Every Monday, receive the top 10 vending machine business listings directly in your inbox.
+              New vending routes and businesses for sale, our exclusive listings first, and what the market is paying. Every Monday. Free.
             </p>
           </div>
 
@@ -80,7 +81,7 @@ export default function Subscribe() {
               disabled={status === "loading"}
               className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {status === "loading" ? "Subscribing..." : "Subscribe"}
+              {status === "loading" ? "Subscribing..." : "Send me new listings →"}
             </button>
 
             {message && (
@@ -101,7 +102,7 @@ export default function Subscribe() {
               <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>Curated Top 10 every Monday morning</span>
+              <span>Our exclusive listings before anyone else, plus every new vending listing</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
