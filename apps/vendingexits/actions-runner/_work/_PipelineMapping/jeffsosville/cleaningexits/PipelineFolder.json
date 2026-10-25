@@ -1,0 +1,12 @@
+﻿{
+  "repositoryName": "jeffsosville/VendingExits",
+  "pipelineDirectory": "VendingExits",
+  "workspaceDirectory": "VendingExits/VendingExits",
+  "repositories": {
+    "jeffsosville/VendingExits": {
+      "repositoryPath": "VendingExits/VendingExits",
+      "lastRunOn": "09/23/2025 14:52:41 -04:00"
+    }
+  },
+  "lastRunOn": "09/23/2025 16:05:44 -04:00"
+}
