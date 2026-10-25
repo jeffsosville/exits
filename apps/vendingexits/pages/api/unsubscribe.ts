@@ -1,7 +1,7 @@
 // pages/api/unsubscribe.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
-import { logConsent } from "@/lib/newsletter/subscribers";
+import { logConsent } from "@exits/core/newsletter/subscribers";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,

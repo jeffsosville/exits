@@ -4,7 +4,7 @@ import {
   VENDING_CATEGORIES,
   categoryOrFilter,
 } from '@/lib/vendingCategories';
-import { getOurListings, filterOurListings } from '@/data/ourListings';
+import { getOurListings, filterOurListings } from '@exits/core/listings/inhouse';
 
 /**
  * listings_direct stores `state` as a 2-letter code. Users type "Colorado",

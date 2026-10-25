@@ -26,7 +26,8 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@site": ["./site.config.ts"]
     }
   },
   "include": [

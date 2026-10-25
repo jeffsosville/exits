@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Header from './Header';
 import Footer from './Footer';
 import InquiryForm from './InquiryForm';
-import type { OurListing } from '@/data/ourListings';
+import type { OurListing } from '@exits/core/listings/inhouse';
 
 // In-house (CleaningExits-brokered) listing page. Laid out like the atmbrokerage.com listing
 // pages: headline + price, intro, key figures, services, the rest of the write-up, business

@@ -1,5 +1,5 @@
 {
-  "name": "VendingExits",
+  "name": "vendingexits",
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
@@ -7,6 +7,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@exits/core": "*",
     "@supabase/supabase-js": "^2.39.4",
     "dotenv": "^17.2.3",
     "next": "13.4.19",

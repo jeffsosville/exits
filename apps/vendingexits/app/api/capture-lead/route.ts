@@ -1,4 +1,4 @@
-import { subscribe } from '@/lib/newsletter/subscribers';
+import { subscribe } from '@exits/core/newsletter/subscribers';
 // app/api/capture-lead/route.ts
 // Simple version with ONE confirmation email via Resend API (no SDK)
 

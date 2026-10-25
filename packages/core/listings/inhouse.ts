@@ -1,6 +1,4 @@
-// data/ourListings.ts
-//
-// In-house (CleaningExits-brokered) listings.
+// In-house (Exits-brokered) listings for the running site's vertical.
 //
 // WAS: a hardcoded array in this file. Adding a listing meant editing code and
 // redeploying, which stops working the moment anyone other than a developer
@@ -13,8 +11,9 @@
 // getOurListings() and getOurListingById() are now async. Callers must await.
 
 import { createClient } from '@supabase/supabase-js';
+import { site } from '../site';
 
-export const VERTICAL = 'cleaning';
+export const VERTICAL = site.vertical;
 
 export type OurListingFinancial = {
   label: string;
@@ -147,8 +146,8 @@ function toListing(r: any): OurListing {
 
     broker: {
       name: r.broker_name ?? 'John Sosville',
-      firm: r.broker_firm ?? 'CleaningExits',
-      email: r.broker_email ?? 'hello@cleaningexits.com',
+      firm: r.broker_firm ?? site.firm,
+      email: r.broker_email ?? site.contactEmail,
       phone: r.broker_phone ?? '888-430-5535',
     },
   };

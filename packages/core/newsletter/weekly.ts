@@ -2,8 +2,8 @@
 //  - our own listings (CRM inhouse_listings, via data/ourListings)
 //  - live third-party listings from DealLedger (vertical_feed_listings RPC; vertical_feeds table decides what counts)
 import { createClient } from '@supabase/supabase-js';
-import { getOurListings, type OurListing } from '@/data/ourListings';
-import { BRAND } from './brand';
+import { getOurListings, type OurListing } from '../listings/inhouse';
+import { site } from '../site';
 import { subscribersDb, unsubscribeUrl, esc, resendBatch } from './subscribers';
 
 // DealLedger is a public, read-only warehouse; the feed function is granted to the anon role.
@@ -37,7 +37,7 @@ const plausible = (l: FeedListing) => !l.price || !l.cash_flow || l.cash_flow < 
 export async function buildWeekly(): Promise<WeeklyContent> {
   const dl = createClient(DL_URL, DL_KEY, { auth: { persistSession: false } });
   const [{ data, error }, ours] = await Promise.all([
-    dl.rpc('vertical_feed_listings', { p_vertical: BRAND.vertical, p_days: 14 }),
+    dl.rpc('vertical_feed_listings', { p_vertical: site.vertical, p_days: 14 }),
     getOurListings().catch(() => [] as OurListing[]),
   ]);
   if (error) throw error;
@@ -74,7 +74,7 @@ const place = (c?: string | null, s?: string | null) => [c, s].filter(Boolean).j
 
 function row(title: string, href: string, meta: string, badge?: string) {
   return `<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb">
-<a href="${esc(href)}" style="color:#111827;font-weight:600;text-decoration:none;font-size:15px">${esc(title)}</a>${badge ? ` <span style="background:${BRAND.accent};color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;vertical-align:middle">${badge}</span>` : ''}
+<a href="${esc(href)}" style="color:#111827;font-weight:600;text-decoration:none;font-size:15px">${esc(title)}</a>${badge ? ` <span style="background:${site.accent};color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;vertical-align:middle">${badge}</span>` : ''}
 <div style="color:#6b7280;font-size:13px;margin-top:3px">${meta}</div></td></tr>`;
 }
 const feedMeta = (l: FeedListing) =>
@@ -86,10 +86,10 @@ const section = (title: string, rows: string) =>
 export function renderWeekly(c: WeeklyContent, unsubscribeToken: string | null): { subject: string; html: string; text: string } {
   const s = c.stats;
   const subject = c.ours.length
-    ? `${BRAND.firm} weekly: ${c.ours[0].title}${s.newThisWeek ? ` + ${s.newThisWeek} new on the market` : ''}`
-    : `${BRAND.firm} weekly: ${s.newThisWeek} new ${BRAND.nounPlural} for sale`;
+    ? `${site.firm} weekly: ${c.ours[0].title}${s.newThisWeek ? ` + ${s.newThisWeek} new on the market` : ''}`
+    : `${site.firm} weekly: ${s.newThisWeek} new ${site.nounPlural} for sale`;
 
-  const ours = c.ours.map((l) => row(l.title, `${BRAND.site}/listing/${l.id}`,
+  const ours = c.ours.map((l) => row(l.title, `${site.url}/listing/${l.id}`,
     [place(l.city, l.state), l.price ? `Asking ${money(l.price)}` : 'Price on request', l.cash_flow ? `Cash flow ${money(l.cash_flow)}` : null].filter(Boolean).join(' · '),
     l.status === 'under_loi' ? 'UNDER LOI' : 'EXCLUSIVE')).join('');
   const fresh = c.fresh.map((l) => row(l.title, l.url, feedMeta(l), 'NEW')).join('');
@@ -99,7 +99,7 @@ export function renderWeekly(c: WeeklyContent, unsubscribeToken: string | null):
 
   const html = `<!doctype html><html><body style="margin:0;background:#f3f4f6">
 <div style="max-width:620px;margin:0 auto;background:#fff;padding:28px 28px 20px;font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.5">
-<div style="font-size:22px;font-weight:700;color:${BRAND.accent}">${BRAND.firm}</div>
+<div style="font-size:22px;font-weight:700;color:${site.accent}">${site.firm}</div>
 <div style="color:#6b7280;font-size:13px">The weekly · ${esc(c.weekOf)}</div>
 <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;background:#f9fafb;border-radius:8px"><tr>
 ${[[String(s.live), 'live listings'], [String(s.newThisWeek), 'new this week'], [money(s.medianPrice), 'median ask'], [s.medianMultiple ? `${s.medianMultiple.toFixed(1)}x` : '—', 'median multiple']]
@@ -108,19 +108,19 @@ ${[[String(s.live), 'live listings'], [String(s.newThisWeek), 'new this week'], 
 ${section(`Our listings`, ours)}
 ${section('New this week', fresh)}
 ${section('Strongest cash flow on the market', top)}
-<div style="margin:30px 0 8px;padding:18px;border:1px solid ${BRAND.accent};border-radius:8px">
+<div style="margin:30px 0 8px;padding:18px;border:1px solid ${site.accent};border-radius:8px">
 <div style="font-weight:700;margin-bottom:6px">Thinking about selling?</div>
-<div style="font-size:14px;color:#374151">Confidential, no obligation. <a href="${BRAND.site}${BRAND.sellerCta.href}" style="color:${BRAND.accent};font-weight:600">${BRAND.sellerCta.label}</a></div>
+<div style="font-size:14px;color:#374151">Confidential, no obligation. <a href="${site.url}${site.sellerCta.href}" style="color:${site.accent};font-weight:600">${site.sellerCta.label}</a></div>
 </div>
 <p style="font-size:12px;color:#9ca3af;margin-top:24px">Third-party listings are summarized from public broker sites and link to the original listing; verify all details with the listing broker.<br>
-You're getting this because you subscribed or signed an NDA on ${BRAND.site.replace('https://', '')}. <a href="${unsub}" style="color:#9ca3af">Unsubscribe</a>${address ? `<br>${esc(address)}` : ''}</p>
+You're getting this because you subscribed or signed an NDA on ${site.url.replace('https://', '')}. <a href="${unsub}" style="color:#9ca3af">Unsubscribe</a>${address ? `<br>${esc(address)}` : ''}</p>
 </div></body></html>`;
 
   const lines = (title: string, items: string[]) => (items.length ? `\n${title}\n${items.join('\n')}\n` : '');
-  const text = `${BRAND.firm} weekly · ${c.weekOf}
+  const text = `${site.firm} weekly · ${c.weekOf}
 ${s.live} live listings · ${s.newThisWeek} new this week · median ask ${money(s.medianPrice)}
-${lines('OUR LISTINGS', c.ours.map((l) => `- ${l.title} (${money(l.price)}): ${BRAND.site}/listing/${l.id}`))}${lines('NEW THIS WEEK', c.fresh.map((l) => `- ${l.title} (${money(l.price)}): ${l.url}`))}${lines('STRONGEST CASH FLOW', c.top.map((l) => `- ${l.title} (${money(l.price)}, CF ${money(l.cash_flow)}): ${l.url}`))}
-Thinking about selling? ${BRAND.site}${BRAND.sellerCta.href}
+${lines('OUR LISTINGS', c.ours.map((l) => `- ${l.title} (${money(l.price)}): ${site.url}/listing/${l.id}`))}${lines('NEW THIS WEEK', c.fresh.map((l) => `- ${l.title} (${money(l.price)}): ${l.url}`))}${lines('STRONGEST CASH FLOW', c.top.map((l) => `- ${l.title} (${money(l.price)}, CF ${money(l.cash_flow)}): ${l.url}`))}
+Thinking about selling? ${site.url}${site.sellerCta.href}
 
 Unsubscribe: ${unsub}${address ? `\n${address}` : ''}`;
   return { subject, html, text };
@@ -132,7 +132,7 @@ export async function sendWeekly(opts: { dryRun?: boolean; onlyEmail?: string } 
   const db = subscribersDb();
   const cutoff = new Date(Date.now() - 5 * 864e5).toISOString();
   let q = db.from('subscribers').select('id, email, unsubscribe_token, send_count')
-    .eq('vertical', BRAND.vertical).eq('confirmed', true).is('unsubscribed_at', null)
+    .eq('vertical', site.vertical).eq('confirmed', true).is('unsubscribed_at', null)
     .or(`last_sent_at.is.null,last_sent_at.lt.${cutoff}`);
   if (opts.onlyEmail) q = q.eq('email', opts.onlyEmail.toLowerCase());
   const { data: subs, error } = await q.limit(5000);
@@ -146,7 +146,7 @@ export async function sendWeekly(opts: { dryRun?: boolean; onlyEmail?: string } 
     const emails = batch.map((s) => {
       const r = renderWeekly(content, s.unsubscribe_token);
       return {
-        from: BRAND.from, reply_to: BRAND.replyTo, to: s.email, subject: r.subject, html: r.html, text: r.text,
+        from: site.from, reply_to: site.replyTo, to: s.email, subject: r.subject, html: r.html, text: r.text,
         headers: { 'List-Unsubscribe': `<${unsubscribeUrl(s.unsubscribe_token)}>` },
       };
     });

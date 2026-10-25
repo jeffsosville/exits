@@ -1,16 +1,16 @@
 import { randomBytes } from 'crypto';
-import { getCrmSupabase } from '@/lib/crmSupabase';
-import { getOurListingById } from '@/data/ourListings';
-import { getVerticalId } from '@/lib/crmInbound';
-import { subscribe, NDA_OPT_IN_TEXT } from '@/lib/newsletter/subscribers';
-import { BRAND } from '@/lib/newsletter/brand';
+import { getCrmSupabase } from '../crm/supabase';
+import { getOurListingById } from '../listings/inhouse';
+import { getVerticalId } from '../crm/inbound';
+import { subscribe, NDA_OPT_IN_TEXT } from '../newsletter/subscribers';
+import { site } from '../site';
 
 /**
  * Ported from atmbrokerage-next/lib/nda/createToken.ts.
  *
  * One difference that matters: ATM resolves deal_id by looking up
- * `atm_routes` by slug. VendingExits listings live in git (data/ourListings.ts),
- * not in a table, so the deal_id comes off the listing record's `crmDealId`.
+ * `atm_routes` by slug. Exits listings live in the CRM's inhouse_listings table,
+ * and the deal_id comes off the listing record's `crmDealId` (crm_deal_id).
  * Set that once per listing after creating the deal in the CRM; without it the
  * NDA still records, but the buyer's Deal Hub renders empty.
  */
@@ -41,9 +41,9 @@ export type CreateTokenResult = {
   error?: string;
 };
 
-const NOTIFY_FROM = 'VendingExits <notifications@vendingexits.com>';
-const NOTIFY_TO = ['john@atmbrokerage.com', 'sales@vendingexits.com'];
-const REPLY_TO = 'sales@vendingexits.com';
+const NOTIFY_FROM = site.notifyFrom;
+const NOTIFY_TO = site.notifyTo;
+const REPLY_TO = site.contactEmail;
 
 export async function createNDAToken(
   input: CreateTokenInput
@@ -118,7 +118,7 @@ export async function createNDAToken(
       const [first, ...rest] = input.buyer_name.split(' ');
       await subscribe({
         email: input.buyer_email,
-        source: `${BRAND.site.replace('https://', '')}/nda`,
+        source: `${site.url.replace('https://', '')}/nda`,
         role: 'buyer',
         confirmed: true,
         explicit: false,
@@ -211,9 +211,9 @@ function buyerHtml(i: CreateTokenInput, url: string): string {
 <p style="margin:24px 0;"><a href="${url}" style="background:#b45309;color:#fff;padding:14px 22px;text-decoration:none;border-radius:4px;font-weight:600;display:inline-block;">Open the Data Room</a></p>
 <p style="font-size:13px;color:#4a443b;">Or paste this into your browser: <a href="${url}" style="color:#b45309;">${url}</a></p>
 <p>Questions go through the data room and we will respond promptly.</p>
-<p>Thanks again,<br>&mdash; The VendingExits Team</p>
+<p>Thanks again,<br>&mdash; The ${site.firm} Team</p>
 <p style="font-size:12px;color:#8a8275;margin-top:32px;border-top:1px solid #e5e0d5;padding-top:16px;">
-<a href="https://vendingexits.com" style="color:#8a8275;">vendingexits.com</a> &middot; <a href="mailto:sales@vendingexits.com" style="color:#8a8275;">sales@vendingexits.com</a> &middot; +1 888-430-5535
+<a href="${site.url}" style="color:#8a8275;">${site.domain}</a> &middot; <a href="mailto:${site.contactEmail}" style="color:#8a8275;">${site.contactEmail}</a> &middot; +1 ${site.phone}
 </p></body></html>`.trim();
 }
 
@@ -229,8 +229,8 @@ ${url}
 
 Questions go through the data room and we will respond promptly.
 
--- The VendingExits Team
-vendingexits.com | sales@vendingexits.com | +1 888-430-5535
+-- The ${site.firm} Team
+${site.domain} | ${site.contactEmail} | +1 ${site.phone}
 `;
 }
 
@@ -247,7 +247,7 @@ The buyer's Deal Hub will be empty. Set <code>crmDealId</code> for
 
   return `
 <!DOCTYPE html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#1a1612;line-height:1.55;max-width:640px;margin:0 auto;padding:24px;">
-<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#b45309;margin-bottom:8px;">New NDA Lead - VendingExits</div>
+<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#b45309;margin-bottom:8px;">New NDA Lead - ${site.firm}</div>
 <h2 style="margin:0 0 24px 0;font-size:22px;">${esc(i.buyer_name)} - ${esc(i.listing_title)}${esc(price)}</h2>
 ${banner}
 <table style="border-collapse:collapse;width:100%;margin-bottom:24px;">

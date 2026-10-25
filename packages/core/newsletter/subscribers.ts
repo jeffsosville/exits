@@ -2,8 +2,8 @@
 // Rows live in the business-listings `subscribers` table, one per (email, vertical);
 // `upsert_subscriber` (SQL) handles merging, unsubscribe suppression and the consent log.
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { BRAND } from './brand';
-import { getCrmSupabase } from '@/lib/crmSupabase';
+import { site } from '../site';
+import { getCrmSupabase } from '../crm/supabase';
 
 let client: SupabaseClient | null = null;
 export function subscribersDb(): SupabaseClient {
@@ -16,7 +16,8 @@ export function subscribersDb(): SupabaseClient {
   return client;
 }
 
-export { NDA_OPT_IN_TEXT } from './brand';
+/** The pre-checked opt-in box on the NDA form. Stored with each signup as the consent text. */
+export const NDA_OPT_IN_TEXT = `Email me new ${site.nounPlural} for sale and market updates from ${site.firm}. Unsubscribe anytime.`;
 
 export type SubscribeInput = {
   email: string;
@@ -47,7 +48,7 @@ export type SubscribeResult = {
 export async function subscribe(i: SubscribeInput): Promise<SubscribeResult> {
   const { data, error } = await subscribersDb().rpc('upsert_subscriber', {
     p_email: i.email,
-    p_vertical: BRAND.vertical,
+    p_vertical: site.vertical,
     p_source: i.source,
     p_role: i.role || 'buyer',
     p_confirmed: !!i.confirmed,
@@ -76,7 +77,7 @@ export async function subscribe(i: SubscribeInput): Promise<SubscribeResult> {
 }
 
 export async function logConsent(email: string, action: 'confirm' | 'unsubscribe', source: string) {
-  await subscribersDb().from('email_consent').insert({ email: email.toLowerCase(), vertical: BRAND.vertical, action, source });
+  await subscribersDb().from('email_consent').insert({ email: email.toLowerCase(), vertical: site.vertical, action, source });
   await mirrorToCrm(email, action === 'confirm' ? 'subscribed' : 'unsubscribed', {});
 }
 
@@ -85,7 +86,7 @@ export async function mirrorToCrm(email: string, status: 'subscribed' | 'pending
   extra: { role?: string; source?: string; first_name?: string | null }) {
   try {
     const now = new Date().toISOString();
-    const row: Record<string, unknown> = { email: email.toLowerCase().trim(), vertical: BRAND.vertical, status, updated_by: BRAND.site.replace('https://', '') };
+    const row: Record<string, unknown> = { email: email.toLowerCase().trim(), vertical: site.vertical, status, updated_by: site.url.replace('https://', '') };
     if (extra.role) row.role = extra.role;
     if (extra.source) row.source = extra.source;
     if (extra.first_name) row.first_name = extra.first_name;
@@ -106,23 +107,23 @@ export function looksLikeBot(email: string, firstName?: string | null) {
   return false;
 }
 
-export const unsubscribeUrl = (token: string | null) => `${BRAND.site}/unsubscribe?token=${token || ''}`;
+export const unsubscribeUrl = (token: string | null) => `${site.url}/unsubscribe?token=${token || ''}`;
 
 /** Double opt-in email for the site signup form. */
 export async function sendConfirmEmail(email: string, firstName: string | null | undefined, r: SubscribeResult) {
   if (!process.env.RESEND_API_KEY || !r.confirmationToken) return;
-  const confirmUrl = `${BRAND.site}/confirm?token=${r.confirmationToken}`;
+  const confirmUrl = `${site.url}/confirm?token=${r.confirmationToken}`;
   await resendSend({
-    from: BRAND.from,
+    from: site.from,
     to: email,
-    reply_to: BRAND.replyTo,
-    subject: `Confirm your ${BRAND.firm} subscription`,
+    reply_to: site.replyTo,
+    subject: `Confirm your ${site.firm} subscription`,
     html: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1f2937;line-height:1.6">
 <p>${firstName ? `Hi ${esc(firstName)},` : 'Hi,'}</p>
-<p>Confirm your email and you'll get the ${BRAND.firm} weekly: new ${BRAND.nounPlural} for sale, the best opportunities in the market, and what they're selling for.</p>
-<p style="margin:28px 0"><a href="${confirmUrl}" style="background:${BRAND.accent};color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Confirm subscription</a></p>
+<p>Confirm your email and you'll get the ${site.firm} weekly: new ${site.nounPlural} for sale, the best opportunities in the market, and what they're selling for.</p>
+<p style="margin:28px 0"><a href="${confirmUrl}" style="background:${site.accent};color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Confirm subscription</a></p>
 <p style="color:#6b7280;font-size:13px">If you didn't sign up, ignore this email and you won't hear from us.</p>
-<p style="color:#9ca3af;font-size:12px">${BRAND.firm} · <a href="${unsubscribeUrl(r.unsubscribeToken)}" style="color:#9ca3af">Unsubscribe</a></p>
+<p style="color:#9ca3af;font-size:12px">${site.firm} · <a href="${unsubscribeUrl(r.unsubscribeToken)}" style="color:#9ca3af">Unsubscribe</a></p>
 </div>`,
   });
 }

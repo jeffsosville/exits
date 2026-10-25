@@ -1,0 +1,11 @@
+{
+  "name": "@exits/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared plumbing for every Exits site: NDA to deal room, CRM inbound, inquiries, in-house listings, newsletter.",
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.39.4",
+    "next": "13.4.19",
+    "react": "18.2.0"
+  }
+}
