@@ -15,7 +15,7 @@ import { GetServerSideProps } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import ValuationAnalysis from '../../components/ValuationAnalysis';
 import OurListingDetail from '../../components/OurListingDetail';
-import { getOurListingById, type OurListing } from '@/data/ourListings';
+import { getOurListingById, type OurListing } from '@exits/core/listings/inhouse';
 
 // Local CleaningExits Supabase (top10 + merge tables)
 const supabaseLocal = createClient(

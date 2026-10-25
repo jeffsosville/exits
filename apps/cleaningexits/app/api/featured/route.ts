@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getOurListings } from '@/data/ourListings';
+import { getOurListings } from '@exits/core/listings/inhouse';
 
 export const dynamic = 'force-dynamic';
 

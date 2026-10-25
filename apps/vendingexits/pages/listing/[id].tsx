@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { GetServerSideProps } from 'next';
 import { createClient } from '@supabase/supabase-js';
-import { getOurListingById, type OurListing } from '@/data/ourListings';
+import { getOurListingById, type OurListing } from '@exits/core/listings/inhouse';
 
 type Listing = {
   id: string;

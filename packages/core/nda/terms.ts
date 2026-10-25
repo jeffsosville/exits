@@ -1,3 +1,5 @@
+import { site } from '../site';
+
 /**
  * Single source of truth for the NDA text shown at the checkbox.
  *
@@ -12,10 +14,10 @@ export const NDA_AGREEMENT_TEXT =
   'I will not share, distribute, or use it for any purpose other than evaluating ' +
   'a potential acquisition, and I will not contact, solicit, or attempt to ' +
   'transact directly with the seller or any party identified through this listing ' +
-  'except through CleaningExits. By checking this box, I am electronically signing ' +
+  `except through ${site.firm}. By checking this box, I am electronically signing ` +
   'this agreement and intend to be legally bound by its full terms.';
 
-export const NDA_COOKIE_NAME = 'cex_nda_access';
+export const NDA_COOKIE_NAME = site.ndaCookie;
 export const NDA_COOKIE_MAX_AGE = 60 * 60 * 24 * 90; // 90 days
 
 export type NDAAccessMap = Record<string, string>;

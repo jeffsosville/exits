@@ -1,0 +1,12 @@
+{
+  "name": "exits",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:cleaning": "npm run build -w apps/cleaningexits",
+    "build:vending": "npm run build -w apps/vendingexits"
+  }
+}

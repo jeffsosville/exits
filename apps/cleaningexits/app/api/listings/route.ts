@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // Backed by a live DealLedger view — never statically cache this route.
-import { getOurListings, filterOurListings } from '@/data/ourListings';
+import { getOurListings, filterOurListings } from '@exits/core/listings/inhouse';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

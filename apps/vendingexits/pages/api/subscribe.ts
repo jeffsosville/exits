@@ -1,7 +1,7 @@
 // Site signup form → this vertical's list (double opt-in: we email a confirm link).
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { subscribe, sendConfirmEmail, looksLikeBot } from '@/lib/newsletter/subscribers';
-import { BRAND } from '@/lib/newsletter/brand';
+import { subscribe, sendConfirmEmail, looksLikeBot } from '@exits/core/newsletter/subscribers';
+import { site as BRAND } from '@/site.config';
 
 const s = (v: unknown, n = 200) => (typeof v === 'string' ? v.trim().slice(0, n) : Array.isArray(v) ? v.join(', ').slice(0, n) : '');
 
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const r = await subscribe({
       email,
-      source: s(b.source) || `${BRAND.site.replace('https://', '')}/subscribe`,
+      source: s(b.source) || `${BRAND.url.replace('https://', '')}/subscribe`,
       role: b.role === 'seller' ? 'seller' : 'buyer',
       confirmed: false,
       explicit: true,

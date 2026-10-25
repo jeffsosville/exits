@@ -4,9 +4,8 @@ import { createClient } from '@supabase/supabase-js';
  * Server-side client for the ATM CRM Supabase project — the application
  * database holding deals, tokens, and buyer records across every vertical.
  *
- * NOT the same project as NEXT_PUBLIC_SUPABASE_URL, which on VendingExits
- * points at the read-only DealLedger warehouse. Writing an NDA there is
- * impossible; that mismatch is why lead capture never worked on this site.
+ * NOT the DealLedger warehouse, which is read-only public data. Every write
+ * (NDAs, inquiries, subscribers) goes here so it reaches the inbound queue.
  *
  * Service role key — never import into a client component.
  */

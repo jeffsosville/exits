@@ -1,4 +1,5 @@
-import { getCrmSupabase } from '@/lib/crmSupabase';
+import { getCrmSupabase } from './supabase';
+import { site } from '../site';
 
 /**
  * Website inquiries go straight into the CRM's inbound queue (inbound_items),
@@ -6,8 +7,8 @@ import { getCrmSupabase } from '@/lib/crmSupabase';
  * and NDA activity instead of only in someone's inbox.
  */
 
-export const VERTICAL_SLUG = 'cleaning';
-export const SITE = 'cleaningexits.com';
+export const VERTICAL_SLUG = site.vertical;
+export const SITE = site.domain;
 
 let cachedVerticalId: string | null = null;
 
@@ -39,7 +40,7 @@ export async function logInbound(i: InboundInput): Promise<{ ok: boolean; error?
   const now = new Date();
   const email = i.email.trim().toLowerCase();
   const subject =
-    i.kind === 'seller_lead' ? 'Selling your cleaning business' : 'Your CleaningExits inquiry';
+    i.kind === 'seller_lead' ? `Selling your ${site.noun}` : `Your ${site.firm} inquiry`;
   const text = [
     i.message && `Message: ${i.message}`,
     i.business && `Business: ${i.business}`,

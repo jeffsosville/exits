@@ -3,7 +3,7 @@
 // GET with Authorization: Bearer CRON_SECRET   → sends (this is how the Vercel cron calls it)
 //     add ?test=you@example.com to send only to that subscriber
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { buildWeekly, renderWeekly, sendWeekly } from '@/lib/newsletter/weekly';
+import { buildWeekly, renderWeekly, sendWeekly } from '@exits/core/newsletter/weekly';
 
 export const config = { maxDuration: 300 };
 

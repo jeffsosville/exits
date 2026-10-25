@@ -1,8 +1,8 @@
 // pages/api/confirm.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
-import { logConsent } from "@/lib/newsletter/subscribers";
-import { BRAND } from "@/lib/newsletter/brand";
+import { logConsent } from "@exits/core/newsletter/subscribers";
+import { site as BRAND } from '@/site.config';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
